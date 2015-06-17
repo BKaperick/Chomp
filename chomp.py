@@ -1,5 +1,4 @@
-from pickle import *
-from copy import copy
+import pickle
 
 class ChompBoard():
     def __init__(self, _rows = []):
@@ -67,6 +66,7 @@ class ChompBoard():
     def full_square(self):
         return max(self.number_of_rows()**2,self.number_of_columns()**2)
 
+    #gives the number of rows of different length
     def rows_of_different_length(self):
         M = self.matrix()
         return M.rank()
@@ -82,19 +82,6 @@ class ChompBoard():
     # number of duplicate columns
     def duplicate_columns(self):
         return self.number_of_columns() - self.columns_of_different_length()
-
-    # full square matrix
-    def squared_matrix(self):
-        M = self.matrix()
-        M = self.matrix()
-        if self._rows == []:
-            return matrix(0,0,[])
-        #ws[0],len(self._rows))
-        M = matrix(m,m,[0]*(m*m))
-        for i in range(len(self._rows)):
-            for j in range(self._rows[i]):
-                M[i,j] = 1
-        return M
 
     # determinant
     def determinant(self):
@@ -122,20 +109,15 @@ class ChompBoard():
                 M[i,j] = 1
         return M
 
-    #column rank of matrix = row rank
-    def columns_of_different_length(self):
-        return self.rows_of_different_length()
-
-    # number of duplicate rows
-    def duplicate_rows(self):
-        return self.number_of_rows() - self.rows_of_different_length()
-
-    # number of duplicate columns
-    def duplicate_columns(self):
-        n = self._rows[0]
-        m = len(self._rows)
-        M = matrix(m,n,[0]*(m*n))
-        for i in range(m):
+    # full square matrix
+    def squared_matrix(self):
+        M = self.matrix()
+        M = self.matrix()
+        if self._rows == []:
+            return matrix(0,0,[])
+        #ws[0],len(self._rows))
+        M = matrix(m,m,[0]*(m*m))
+        for i in range(len(self._rows)):
             for j in range(self._rows[i]):
                 M[i,j] = 1
         return M
@@ -144,46 +126,11 @@ class ChompBoard():
     def columns_of_different_length(self):
         return self.rows_of_different_length()
 
-    # number of duplicate rows
-    def duplicate_rows(self):
-        return self.number_of_rows() - self.rows_of_different_length()
-
-    # number of duplicate columns
-    def duplicate_columns(self):
-        n = self._rows[0]
-        M = matrix(m,n,[0]*(m*n))
-        for i in range(m):
-            for j in range(self._rows[i]):
-                M[i,j] = 1
-        return M
-
-    #gives min positive eigenvalue
-    #DON'T USE, has uninitialized Lreal
-    def eigen_max_positive(self):
-        M = self.squared_matrix()
-        L = M.eigenvalues()
-        if Lreal != []:
-            return max(Lreal)
-        else:
-            return 0
-
-    def eigen_min_positive(self):
-        M = self.squared_matrix()
-        L = M.eigenvalues()
-        Lreal = [real_part(x) for x in L if real_part(x) > 0]
-        if Lreal != []:
-            return max(Lreal)
-        else:
-            return 0
 
     #returns a matrix of damage values
     def damage_matrix(self):
         M_columns = self.number_of_columns()
         M_rows = self.number_of_rows()
-        M_max = max(self.number_of_columns(),self.number_of_rows())
-        M_max = max(self.number_of_columns(),self.number_of_rows())
-        M_max = max(self.number_of_columns(),self.number_of_rows())
-        M_max = max(self.number_of_columns(),self.number_of_rows())
         M_max = max(self.number_of_columns(),self.number_of_rows())
         M = matrix(M_rows,M_columns,[0]*(M_rows*M_columns))
         oldcookies = self.number_of_cookies()
@@ -215,17 +162,6 @@ class ChompBoard():
         M = self.squared_matrix()
         L = M.eigenvalues()
         return [x for x in L if x.is_real()]
-
-    #returns a matrix of damage values
-    def damage_matrix(self):
-        M_columns = self.number_of_columns()
-        M_rows = self.number_of_rows()
-        number = 0
-        M= self.damage_matrix()
-        for i in range(M_rows):
-            for j in range(M_columns):
-                number = number + M[i,j]
-        return number
 
     #returns the gcd of of row lengths
     def row_gcd(self):
@@ -299,12 +235,14 @@ class ChompBoard():
         M = self.squared_damage_matrix()
         return M.trace()
 
+    # Returns the Damage_Sum / Number of Cookies
     def average_damage(self):
         damage_sum = self.damage_sum()
         cookies = self.number_of_cookies()
         average = damage_sum/cookies
         return average
 
+    # Returns the Rows of Different Length / Total Rows
     def rank_ratio(self):
         rank = self.rows_of_different_length()
         rows = self.number_of_rows()
@@ -383,6 +321,12 @@ class ChompBoard():
         remainder = mod(cookies,N)
         return remainder
 
+    # Returns the number of cookies in the last row
+    def cookies_in_last_row(self):
+        M = self.number_of_rows()
+        last = self.rows() [M-1]
+        return last
+
     #For test_completes_self
     def row_difference(board):
         M = []
@@ -413,19 +357,21 @@ class ChompBoard():
 
         ###### PROPERTIES
 
-    #true if odd number of cookies false if even
+    # Returns True for P- Boards False for N-Boards
     def is_P_board(self):
         if is_P_position(self):
             return True
         else:
             return False
 
+    # Returns True for N-Boards False for P-Boards
     def is_N_board(self):
         if is_N_position(self):
             return True
         else:
             return False
 
+    # Returns True if the Number of Cookies is Odd
     def odd_cookies(self):
         number = self.number_of_cookies()
         if is_even(number):
@@ -433,7 +379,7 @@ class ChompBoard():
         else:
             return True
 
-    #true if even number of cookies false if odd
+    # Returns True if the Number of Cookies is Even
     def even_cookies(self):
         number = self.number_of_cookies()
         if is_even(number):
@@ -441,7 +387,7 @@ class ChompBoard():
         else:
             return False
 
-    #tests if the board is a full square board
+    # Returns True if a Board Has Equal Rows and Columns and Rows**2 Cookies
     def is_square(self):
         M = self.number_of_rows()
         N = self.number_of_columns()
@@ -452,6 +398,8 @@ class ChompBoard():
             return False
         else:
             return True
+
+    # Returns True if Cookies == Rows * Columns
     def is_rectangle(self):
         M = self.number_of_rows()
         N = self.number_of_columns()
@@ -463,8 +411,7 @@ class ChompBoard():
 
 
     #test if our key conjecture is true (number_of_cookes >= 2*number_of_columns - 1)
-
-    def test_theorem1(self):
+    def test_columns_theorem(self):
         C = self.number_of_cookies()
         col = self.number_of_columns()
         if C >= 2*col - 1:
@@ -498,15 +445,6 @@ class ChompBoard():
             return False
 
 
-    #test if our key conjecture is true (number_of_cookes >= 2*number_of_columns - 1)
-
-    def test_columns_columns_theorem(self):
-        C = self.number_of_cookies()
-        col = self.number_of_columns()
-        if C >= 2*col - 1:
-            return True
-        else:
-            return False
 
     # tests if the board is a balanced L
     def is_balanced_L(self):
@@ -531,6 +469,16 @@ class ChompBoard():
             return False
         else:
             return True
+
+    # Returns True if the Board has One Row or One Column
+    def is_single_row_column(self):
+        M = self.number_of_rows()
+        N = self.number_of_columns()
+        if M == 1 or N == 1:
+            return True
+        else:
+			return False
+
 
     #the two column/row solution
     def is_two_row_solution(self):
@@ -560,15 +508,6 @@ class ChompBoard():
         else:
             return False
 
-    #test if our key conjecture is true (number_of_cookes >= 2*number_of_columns - 1)
-
-    def test_theorem1(self):
-        C = self.number_of_cookies()
-        col = self.number_of_columns()
-        if C >= 2*col - 1:
-            return True
-        else:
-            return False
 
     # tests if a balanced L is reachable
     def reachable_balanced_L(self):
@@ -597,12 +536,21 @@ class ChompBoard():
                 return True
         return False
 
-    # property of p position
-    def test_P_position(self):
-        if is_P_position(self)== True:
-            return True
-        else:
-            return False
+    # Returns True if the Three Row One Cookie Solution is Reachable
+    def reachable_three_row_one_cookie(self):
+        reachable = find_reachable_boards(self)
+        for board in reachable:
+            if board.three_row_one_cookie() == True:
+                return True
+        return False
+
+    # Returns True if the Three Row Two Cookie Solution is Reachable
+    def reachable_three_row_two_cookie(self):
+        reachable = find_reachable_boards(self)
+        for board in reachable:
+            if board.three_row_two_cookie() == True:
+                return True
+        return False
 
     #zeilberger paper theorem 1 about 3 row chomp
     def three_row_one_cookie(self):
@@ -620,6 +568,7 @@ class ChompBoard():
         else:
             return False
 
+    # Returns True if the Board is an Almost L Solution (L with One Interior Cookies; see New Theorems)
     def is_almost_L(self):
         M_rows = self.number_of_rows()
         M_col = self.number_of_columns()
@@ -631,6 +580,40 @@ class ChompBoard():
         else:
             return False
 
+    # Returns True if an Almost L Solution is Reachable
+    def reachable_almost_L(self):
+        reachable = find_reachable_boards(self)
+        for board in reachable:
+            if board.is_almost_L() == True:
+                return True
+        return False
+
+    # Returns True is a Board is an Almost Almost L Solution (L with Two Interior Cookies; see new Theorems)
+    def is_almost_almost_L(self):
+        M_rows = self.number_of_rows()
+        M_col = self.number_of_columns()
+        cookies = self.number_of_cookies()
+        if abs(M_rows-M_col) != 1:
+            return False
+        elif cookies != M_rows + M_col + 1:
+            return False
+        elif is_even(M_rows) and M_rows > M_col:
+            return True
+        elif is_even(M_col) and M_col > M_rows:
+            return True
+        else:
+            return False
+
+    # Returns Trus if a Almost Almost L is Reachable
+    def reachable_almost_almost_L(self):
+        reachable = find_reachable_boards(self)
+        for board in reachable:
+            if board.is_almost_almost_L() == True:
+                return True
+        return False
+
+
+    # Returns True if the Number of Cookies is Prime
     def test_prime_cookies(self):
         cookies = self.number_of_cookies()
         if is_prime(cookies):
@@ -638,17 +621,21 @@ class ChompBoard():
         else:
             False
 
+    # Tests the Transpose of our Key Conjecture
     def test_row_theorem(self):
         M = self.number_of_rows()
         cookies = self.number_of_cookies()
         if cookies >= 2*M - 1:
             return False
-        elif is_even(M_rows) and M_rows < M_col:
+        return True
+    '''
+        elif is_even(M) and M_rows < M_col:
             return True
         elif is_even(M_col) and M_col < M_rows:
             return True
         else:
             return False
+    '''
 
 
     #zeilberger paper theorem 2 about 3 row chomp
@@ -662,61 +649,26 @@ class ChompBoard():
         else:
             return False
 
-    #needs explanation
-    def is_almost_L(self):
-        M_rows = self.number_of_rows()
-        M_col = self.number_of_columns()
-        cookies = self.number_of_cookies()
-        if abs(M_rows-M_col) != 1:
-            return False
-        elif cookies != M_rows + M_col:
-            return True
-        else:
-            return False
 
-    def test_prime_cookies(self):
-        cookies = self.number_of_cookies()
-        if is_prime(cookies):
-            return True
-        else:
-            False
-
-    def test_row_theorem(self):
+    # Returns True if the Number of Cookies is Divisible by Rows
+    def cookies_divisible_by_rows(self):
         M = self.number_of_rows()
         cookies = self.number_of_cookies()
-        if cookies >= 2*M - 1:
-            return False
-        elif is_even(M_rows) and M_rows < M_col:
-            return True
-        elif is_even(M_col) and M_col < M_rows:
+        if mod(cookies,M) == 0:
             return True
         else:
             return False
 
-
-    def test_Theorem2(self):
-        M_rows = self.number_of_rows()
-        M_col = self.number_of_columns()
-        cookies = self.number_of_cookies
-        if M_col == M_rows + 1 and cookies == M_rows + M_col:
-            return True
-        else:
-            return False
-
-    def test_prime_cookies(self):
+   # Returns True if the Number of Cookies is Divisible by Columns
+    def cookies_divisible_by_columns(self):
+        N = self.number_of_columns()
         cookies = self.number_of_cookies()
-        if is_prime(cookies):
-            return True
-        else:
-            False
-
-    def test_row_theorem(self):
-        M = self.number_of_rows()
-        cookies = self.number_of_cookies()
-        if cookies >= 2*M - 1:
+        if mod(cookies,N) == 0:
             return True
         else:
             return False
+
+    # Returns True if the Number of Cookies is a Composite Odd
     def composite_odd_cookies(self):
         cookies = self.number_of_cookies()
         if is_even(cookies):
@@ -726,6 +678,7 @@ class ChompBoard():
         else:
             return True
 
+    # Returns True if the Number of Rows is Greater than the Number of Columnbs
     def rows_greater_than_columns(self):
         M = self.number_of_rows()
         N = self.number_of_columns()
@@ -734,6 +687,7 @@ class ChompBoard():
         else:
             return False
 
+    # Returns True if the Number of Columns is Greater than the Number of Rows
     def columns_greater_than_rows(self):
         M = self.number_of_rows()
         N = self.number_of_columns()
@@ -742,6 +696,7 @@ class ChompBoard():
         else:
             return False
 
+    # Returns True if the Board is Symmetric
     def is_symmetric(self):
         board = self.rows()
         transpose = self.columns()
@@ -750,6 +705,7 @@ class ChompBoard():
         else:
             return False
 
+    # Returns True if the Number of Cookies in the First Row and First Column is Less than Cookies not in the First Row and First Column
     def cookies_in_greater_than_cookies_out(self):
         M = self.number_of_rows()
         N = self.number_of_columns()
@@ -760,6 +716,8 @@ class ChompBoard():
             return True
         else:
             return False
+
+    # Returns True if the Number of Cookies in the First Row and First Column is Greater than Cookies not in the First Row and First Column
     def cookies_out_greater_than_cookies_in(self):
         M = self.number_of_rows()
         N = self.number_of_columns()
@@ -771,29 +729,46 @@ class ChompBoard():
         else:
             return False
 
-    def cookies_divisible_by_rows(self):
-        M = self.number_of_rows()
-        cookies = self.number_of_cookies()
-        if mod(cookies,M) == 0:
-            return True
-        else:
-            return False
-
-    def cookies_divisible_by_columns(self):
-        N = self.number_of_columns()
-        cookies = self.number_of_cookies()
-        if mod(cookies,N) == 0:
-            return True
-        else:
-            return False
-
-
 
     #If rotated, does chomp board fit nicely with itself?
     def test_completes_self(board):
         A = step_list(board)[0:(len(step_list(board))-1)]
         B = step_list(board)[1:len(step_list(board))]
         if A == A[::-1] or B == B[::-1]:
+            return True
+        else:
+            return False
+
+    # Returns True if the Row Remainder is the Max Row Remainder
+    def max_row_remainder(self):
+        remainder = self.row_remainder()
+        M = self.number_of_rows()
+        if M-remainder == 1:
+            return True
+        else:
+            return False
+
+    # Returns True if the Column Remainder is the Max Column Remainder
+    def max_column_remainder(self):
+        remainder = self.row_remainder()
+        M = self.number_of_columns()
+        if M - remainder == 1:
+            return True
+        else:
+            return False
+
+    #Returns True if the Number of Cookies Inside is Odd
+    def odd_cookies_in(self):
+        cookies_in = self.cookies_inside()
+        if is_even(cookies_in) == False:
+            return True
+        else:
+            return False
+
+    # Returns Trus if the Number of Cookies Inside is Prime
+    def prime_cookies_in (self):
+        cookies_in = self.cookies_inside()
+        if is_prime(cookies_in):
             return True
         else:
             return False
@@ -921,7 +896,7 @@ def find_reachable_P_positions(B):
             reachable_P.append(x)
 
     #can be removed
-    #save(position_values, "position_values.sobj")
+    save(position_values, "position_values.sobj")
 
     return reachable_P
 
@@ -970,7 +945,7 @@ def print_position_values_formatted():
             p_out += "ChompBoard({}), ".format(k)
         elif v == 'N':
             n_out += "ChompBoard({}), ".format(k)
-    print (p_out,'\n\n', n_out)
+    print p_out,'\n\n', n_out
 
 #Print P-positions only
 def print_P_position_values_formatted():
@@ -981,7 +956,7 @@ def print_P_position_values_formatted():
             p_out += "ChompBoard({}), ".format(k)
         elif v == 'N':
             n_out += "ChompBoard({}), ".format(k)
-    print (p_out)
+    print p_out
 
 #Print N-positions only
 def print_N_position_values_formatted():
@@ -992,7 +967,7 @@ def print_N_position_values_formatted():
             p_out += "ChompBoard({}), ".format(k)
         elif v == 'N':
             n_out += "ChompBoard({}), ".format(k)
-    print (n_out)
+    print n_out
 
 import ast
 def convert_board_name_to_board(name_of_board):
@@ -1035,10 +1010,10 @@ def find_Pcounterexample(conj, row_limit, column_limit):
             value = conj.evaluate(board)
             if value == False:
                 #Pcounterexamples.append(board.name())
-                print ("{} is a counterexample to: {}".format(board.name(),conj))
+                print "{} is a counterexample to: {}".format(board.name(),conj)
                 return board
         except:
-            print ("error with evaluating: {} for {}".format(conj,board.name()))
+            print "error with evaluating: {} for {}".format(conj,board.name())
 
     L = find_reachable_P_positions(ChompBoard([column_limit]*row_limit))
 
@@ -1047,12 +1022,12 @@ def find_Pcounterexample(conj, row_limit, column_limit):
             value = conj.evaluate(board)
             if value == False and board.name() not in Pcounterexamples:
                 Pcounterexamples.append(board.name())
-                print ("{} is a counterexample to: {}".format(board.name(),conj))
+                print "{} is a counterexample to: {}".format(board.name(),conj)
                 return board
         except:
-            print ("error with evaluating: {} for {}".format(conj,board.name()))
+            print "error with evaluating: {} for {}".format(conj,board.name())
 
-    print ("{}: No counterexamples found".format(conj))
+    print "{}: No counterexamples found".format(conj)
 
 
 def find_Ncounterexample(conj, row_limit, column_limit):
@@ -1063,10 +1038,10 @@ def find_Ncounterexample(conj, row_limit, column_limit):
         try:
             value = conj.evaluate(board)
             if value == False:
-                print ("{} is a counterexample to: {}".format(board.name(),conj))
+                print "{} is a counterexample to: {}".format(board.name(),conj)
                 return board
         except:
-            print ("error with evaluating: {} for {}".format(conj,board.name()))
+            print "error with evaluating: {} for {}".format(conj,board.name())
 
     L = find_reachable_N_positions(ChompBoard([column_limit]*row_limit))
 
@@ -1075,12 +1050,12 @@ def find_Ncounterexample(conj, row_limit, column_limit):
             value = conj.evaluate(board)
             if value == False and board.name() not in Ncounterexamples:
                 Ncounterexamples.append(board.name())
-                print ("{} is a counterexample to: {}".format(board.name(),conj))
+                print "{} is a counterexample to: {}".format(board.name(),conj)
                 return board
         except:
-            print ("error with evaluating: {} for {}".format(conj,board.name()))
+            print "error with evaluating: {} for {}".format(conj,board.name())
 
-    print ("{}: No counterexamples found".format(conj))
+    print "{}: No counterexamples found".format(conj)
 
 #finds Pcounterexamples to a *list* of P-board conjectures
 #saves Pcounterexample file
@@ -1091,14 +1066,14 @@ def find_Pcounterexamples(conjs, row_limit, column_limit):
     for conj in conjs:
         find_Pcounterexample(conj, row_limit, column_limit)
 
-    #save(Pcounterexamples, "Pcounterexamples.sobj")
+    save(Pcounterexamples, "Pcounterexamples.sobj")
 
 def find_Ncounterexamples(conjs, row_limit, column_limit):
 
     for conj in conjs:
         find_Ncounterexample(conj, row_limit, column_limit)
 
-    #save(Ncounterexamples, "Ncounterexamples.sobj")
+    save(Ncounterexamples, "Ncounterexamples.sobj")
 
 
 # appends conjectures with n counterexample to new list
