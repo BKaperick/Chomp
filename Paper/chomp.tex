@@ -1,0 +1,471 @@
+\documentclass{amsart}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\linespread{1.2}
+\pagestyle{plain}
+\usepackage[superscript,biblabel]{cite}
+%\thispagestyle{empty}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{term}{Definition} %[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{transpose}{Lemma}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{prop}[thm]{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+\numberwithin{equation}{section}
+
+
+\title{Automated Conjecture-making III: Chomp!}
+
+\author{Bradford, Day, Hutchinson, Kaperick, Larson, Mills, Muncy, Philips, Van Cleemput, ???}
+
+\address{Department of Mathematics and Applied Mathematics\\Virginia Commonwealth University\\Richmond, VA 23284\\phone: (804) 828-5576, fax: (804) 828-8785}
+
+\address{Applied Mathematics and Computer Science\\Ghent University\\Krijgslaan 281 S9,
+9000 Ghent, Belgium\\}
+
+\address{Department of Mathematics\\Virginia Tech\\528 McBryde Hall\\Blacksburg, VA 24061\\phone: (540) 231-3453, fax: (540) 231-5960}
+
+\begin{document}
+\begin{abstract}
+This article makes a novel attempt at constructing winning strategies in the combinatorial game Chomp. 
+\end{abstract}
+\maketitle
+
+%Write paper here
+
+\section{Chomp Basics}
+\noindent In 1974, David Gale formulated a "curious nim-type game" named Chomp\cite{Gale74}. Chomp is a two player impartial combinatorial game played on a rectangular array of objects called a Chomp board. While the nature of these objects is inconsequential, we use cookies. Players alternate choosing one of these cookies to remove from the board.  Once a cookie is selected, it is eliminated from the board along with all cookies to the right and below. The opposing player then moves in kind.  The goal of Chomp is to force the opponent to take the top left cookie on the board, referred to as the \textit{poison cookie} (see Figure \ref{samplegame} for a sample game). As a combinatorial game, Chomp research makes reference to several terms unique to that field. This includes regular reference to P-positions and N-Positions\cite{winningways}.\\
+
+\begin{figure}[samplegame]
+\includegraphics[scale=0.27]{sample_game_draft_v2.png}
+\caption{A Chomp Game}
+\end{figure}
+%visual representation of playing a game figure 1
+
+\begin{term}
+ A \textit{P-position} is any Chomp board in which the previous player has a winning strategy.
+\end{term}
+
+\begin{term} A \textit{N-position} is any Chomp board where the next player has a winning strategy.\\
+\end{term}
+
+\noindent It is important to consider a few special cases of P-Positions and N-Positions encountered during Chomp game play. \\
+
+\begin{term}
+A Balanced L Board is a M $\times$ M dimension Chomp board such that the first row and first column have M cookies and all other rows and columns have one cookie.\ref{balancedL} 
+\begin{figure}[balancedL]
+\includegraphics[scale=0.25]{balancedL.png}
+\caption{Balanced L Position}
+\end{figure}
+\end{term}
+
+\begin{rem}
+A Balanced L Board is a P-Position.
+\end{rem}
+\begin{proof}
+When given a Balanced L Board, a player can choose some cookie (1,j) or (i,1). The opposing player then responds by choosing (j,1) or (1,i), respectively. This process continues and it is easy to see that it ends in a win for the opposing player. Therefore, Balanced L's are P-Positions.  
+\end{proof}
+
+\begin{term}
+An Unbalanced L Board is a M $\times$ N dimension Chomp board, where M $\neq$ N, such that the first row and first column have N cookies and all other rows and columns have one cookie.\ref{unbalancedL} 
+\begin{figure}[unbalancedL]
+\includegraphics[scale=0.25]{unbalancedL.png}
+\caption{Unbalanced L Position}
+\end{figure}
+\end{term}
+
+\begin{rem}
+An Unbalanced L Board is a N-Position.
+\end{rem}
+\begin{proof}
+Suppose a player is given an Unbalanced L Board of dimension M $\times$ N.\\
+\underline{Case 1}: M $>$ N. \\
+The player chooses the $(1,n)$ cookie giving the next player a P-Position and the game follows the balanced L strategy above.\\
+\underline{Case 2}: M $<$ N.\\
+The player chooses the $(m,1)$ cookie giving the next player a P-Position and the game follows the Balanced L strategy above.
+\end{proof}
+
+\begin{term}
+A Square Chomp board is a M $\times$ M board such that each row has M cookies. 
+\end{term}
+
+\begin{rem}
+A Square Chomp board is a N-Position
+\end{rem}
+\begin{proof}
+Suppose that a player is given a square Chomp board. The player can take the $(2,2)$ cookie giving the opposing player a balanced L position, which is a P-Position.
+\end{proof}
+
+\begin{term}
+Two-rowed Chomp and Three-Rowed Chomp are Chomp Boards of the form 2 $\times$ N and 3 $\times$ N, respectively.
+\end{term}
+
+\begin{rem}[Two row chomp]
+A Chomp board in Two-rowed Chomp is a P-position iff the number of cookies in the first row is one greater than the number of cookies in the second row.
+\end{rem}
+\begin{figure}[2row]
+\includegraphics[scale=0.25]{2_row_chomp.png}
+\caption{The only two row P-position Chomp Board}
+\end{figure}
+\begin{proof}
+As shown in Gale's 1974 paper.\cite{Gale74}
+\end{proof}
+
+
+
+\noindent In Gale's original 1974 paper, he presents a particularly beautiful proof that, regardless of size, an initial rectangular board is an N-Position.
+
+\begin{thm}
+\label{stealing}
+Given any Chomp board with dimension M $\times$ N, the player who moves first has a winning strategy.
+\end{thm}
+\begin{proof} \hfill \break
+\underline{Case 1}: Taking the $(m,n)$ cookie is a winning strategy\\ 
+The first player simply selects $(m,n)$ and has a winning strategy.\\
+\underline{Case 2}: Taking the $(m,n)$ cookie is not a winning strategy\\
+If $(m,n)$ is not a winning strategy, then there must be some other cookie $(i,j)$ such that taking $(i,j)$ is a winning strategy in response to the first player taking $(m,n)$. However, the first player could have also chosen this cookie $(i,j)$ and then would have a winning strategy.
+\end{proof}
+
+It is important to note that this represents a example of a nonconstructive existence proof. That is, while the proof conclusively shows that a winning strategy exists for the first player, it does no work showing the process by which this winning strategy would be formulated. This goal of constructing a winning strategy given some arbitrary Chomp board has been the goal of much research since the game's initial formulation. Doron Zeilberger's collection of Chomp research papers have this project as their main goal. Zeilberger has focused mainly on Three Rowed Chomp and has constructed several theorems regarding those boards.
+
+\begin{thm}
+Given a Three-Rowed Chomp board with one cookie in the third row, the board is a P-Position iff the board is a balanced L with three cookies in the first row and column or the board is the transpose of a two row solution.
+\end{thm}
+\begin{proof}
+As shown in Zeilberger's Three-Rowed CHOMP\cite{zeilberger}
+\end{proof}
+
+\begin{thm}
+Given a Three-Rowed Chomp board with two cookies in the third row, the board is a P-Position iff the number of cookies in the first row is two greater than the number of cookies in the second row
+\end{thm}
+\begin{proof}
+As Shown in Zeilberger's Three-Rowed Chomp\cite{zeilberger}
+\end{proof}
+
+
+
+While a winning strategy is know for these special boards, no general form of a winning strategy for some arbitrary board has been constructed. Furthermore, discovering additional P-Positions has required extensive computer assisted evaluation. All \textit{reachable} boards must be evaluated for reachable P-Positions and this must be iterated through a full game play for each possible board to determine if the original position is a P-Position.
+
+
+\begin{term} A Chomp board, B, is reachable from another Chomp board, B' iff given B a player can make one legal move and leaving their opponent with B'.
+\end{term}
+
+The goal of our research is two pronged: to develop an intelligent game player for Chomp and to discover and prove Chomp Theorems. These goals are pursued in a novel way by means of automated conjecture making. Section 2 describes what conjecture making is and how exactly it is used to accomplish our goals. Section 4 illustrates the success of this method at accomplishing the first goal of developing an intelligence game player and Section 5 explores conjecturing's effectiveness at producing viable Chomp Theorems. \\
+  
+
+
+%we prove several basic theorems, present several interesting conjectures and evidence for their truth, and success using conjectures to quickly identify P-positions from N-positions. speed is important. a turing-test passer must, for instance, respond in a human reasonable amount of time.
+
+
+
+
+%we use a conjecture-making program to make conjectures about P-positions. these conjectures have the potential both to advance the theory of P-positions, as well as can be used in deciding between potential moves. it is worth noting that, of course, these conjectures may not be true - nevertheless they are true for all objects the program "knows" about - and this is often the best that we humans can do.
+
+
+
+
+
+%it is interesting to note that, a *reason* can be given for each move, in terms of conjectures and the position evaluation function. this is in contrast, for instance, to neural-net game players. it is also significant that conjectures can be wrong, counterexamples can be input and new conjectures generated. this iteration seems consistent with human practice.
+
+
+
+\section{Conjecturing program \& Conjecture Examples}
+
+%we use a conjecture making program that, for our purposes may be described as a black box. a full description of how the program runs can be found in a forthcoming paper. the inputs of the program are some number of chomp invariants, and some number of chomp positions.
+Conjecturing is a program that, for our purposes, may be described as a black box.  The inputs of the program are Chomp boards and invariants.  It outputs conjectures applicable to the Chomp board inputs.  A full description of how the program runs may be found in the forthcoming paper \textit{Automated Conjecturing II}.
+
+%how many objects should be used? we have generally used only a few: small examples and counterexamples to previous conjectures.
+It is important to determine what Chomp boards should be added to the objects list.  We start with small examples of boards whose $P$-ness has already been ascertained.  Chomp boards such as [1], [2,1], [5,4], [4,2,2], [5,3,2]  and [10,8,2] we know to be P-positions by two\cite{Gale74} and three-row\cite{3row} Chomp theory.
+
+%first objects: ['[1]', '[30, 29]', '[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1]', '[8, 1, 1, 1, 1, 1, 1, 1]', '[10, 1, 1, 1, 1, 1, 1, 1, 1, 1]', '[12, 12, 8]', '[25, 8, 8, 8, 8]', '[30, 30, 12, 12, 12, 12]'
+
+
+
+
+%what is a chomp invariant? define the terms that appear in the conjectures.
+Next we supply Conjecturing with invariants that it uses to produce conjectures.  An \textit{invariant} is a number that can be associated with any Chomp board.  Examples include the number of rows, the amount of cookies, and the smallest column size.  Table \ref{initial_invariants} below shows the initial list of invarants used to generate conjectures.
+\indent Conjecturing feeds off of invariants.  That is, the number of conjectures output is directly correlated with the number of invariants input.  In order to generate several useful conjectures, it often takes a large number of both invariants and Chomp boards.
+
+%first invariants: invariants = [ChompBoard.number_of_rows,ChompBoard.number_of_columns, ChompBoard.number_of_cookies, ChompBoard.full_rectangle, ChompBoard.rows_of_different_length, ChompBoard.trace_square, ChompBoard.squareness, ChompBoard.row_product, ChompBoard.column_product, ChompBoard.average_cookies_per_column, ChompBoard.average_cookies_per_row]
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}|l|p{7cm}|@{}}
+\toprule
+\multicolumn{1}{|c|}{{\bf Invariant}} & \multicolumn{1}{c|}{{\bf Explanation}} \\ \midrule
+ChompBoard.number\_of\_cookies &  \\
+\hline
+ChompBoard.number\_of\_rows &  \\
+\hline
+ChompBoard.number\_of\_columns &  \\
+\hline
+ChompBoard.full\_rectangle & Number of rows times the number of columns. \\
+\hline
+ChompBoard.rows\_of\_different\_length &  \\
+\hline
+ChompBoard.trace\_square & Counts the number of cookies on the main diagonal of a squared Chomp Board. \\
+\hline
+ChompBoard.squareness & The absolute value of the number of rows minus the number of columns. \\
+\hline
+ChompBoard.row\_product & The product of the row lengths. \\
+\hline
+ChompBoard.column\_product & The product of the column lengths. \\
+\hline
+ChompBoard.average\_cookies\_per\_column &  \\
+\hline
+ChompBoard.average\_cookies\_per\_row &\\
+\hline
+\end{tabular}
+\caption{Initial Chomp board invariants}
+\label{initial_invariants}
+\end{table}
+
+
+
+%need pictures of P-positions used in the program
+
+
+
+
+
+
+
+  Table \ref{initial_conjectures} shows some examples of an early conjecture-making output taking only simple boards and our initial conjectures. After generating conjectures for these Chomp boards, individual conjectures are considered for their truth value both for all boards and for P-Positions specifically. This portion of the application of conjecture making furthers the second goal of our project: to prove Chomp Theorems. However, it is possible that a conjecture made by the program will be true for all the P-Positions input and not be true for all P-Positions generally. If a P-Position counterexample is found for one of the conjectures, then this position is added to the list of Chomp board inputs thereby eliminating this conjecture from the output list and producing a different set of conjectures.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}|l|p{7cm}|@{}}
+\toprule
+\multicolumn{1}{|c|}{{\bf Invariant}} & \multicolumn{1}{c|}{{\bf Explanation}} \\ \midrule
+ChompBoard.number\_of\_cookies &  \\
+\hline
+ChompBoard.number\_of\_rows &  \\
+\hline
+ChompBoard.number\_of\_columns &  \\
+\hline
+ChompBoard.full\_rectangle & Number of rows times the number of columns. \\
+\hline
+ChompBoard.rows\_of\_different\_length &  \\
+\hline
+ChompBoard.trace\_square & Counts the number of cookies on the main diagonal of a squared Chomp Board. \\
+\hline
+ChompBoard.squareness & The absolute value of the number of rows minus the number of columns. \\
+\hline
+ChompBoard.row\_product & The product of the row lengths. \\
+\hline
+ChompBoard.column\_product & The product of the column lengths. \\
+\hline
+ChompBoard.average\_cookies\_per\_column &  \\
+\hline
+ChompBoard.average\_cookies\_per\_row &\\
+\hline
+\end{tabular}
+\caption{Initial Chomp board conjectures}
+\label{initial_conjectures}
+\end{table}
+%interesting conjectures generated on various runs
+
+
+\section{Using Conjectures in Robot player}
+
+%idea: use conjectures in a position evaluation function, many of these are possible. all assume that the conjectures are correct.
+The computer selects the best position to move to based on the generated conjectures.
+
+
+
+%the way to evaluate a position evaluation function: what percentage of the time does it input an N-position and output a reeachable position which is a P-position?
+
+
+
+
+
+%one approach: conjectures only with no built-in knowledge & success
+
+
+
+
+
+
+%another approach: mix conjectures with known theory - hand build in knowledge & success
+
+
+
+
+
+%other position evaluation function ideas
+
+
+
+\section{Intelligent Game Player Example \& Simulation Data}
+
+%we have written a simple game player that allows a human to play against our program, using any choice of position evaluation function for the robot.
+The first aforementioned goal of our Chomp research is to produce an intelligent game player. The immediately obvious hurdle comes in constructing a functional definition of what it means to be intelligent. It is impossible to explicate a functional definition of artificial intelligence without strong consideration of the ground-breaking work of Alan Turing. The Turing Test serves as a foundational motivation for how intelligence is defined for the Chomp computer player. That is testing an artificial Chomp player against players of differing levels of intelligence. According to Theorem \ref{stealing},  We have written a simple game player that allows a human to play Chomp against the computer.  The human player determines their moves on their own accord while the robot player follows a given position evaluation function.
+
+
+%one test for intelligence would be the flawlessness of the robot's play. we might jusdge it to be intelligent if, when given an N-position, alswys returned a P-position.
+
+
+
+%this allows for some kind of test f the robot's "chomp intelligence". akin to the turing test, you might judge the intelligence of the player by having a human play both another human and the robot online, and guessing which player the human is.
+
+
+
+%a third test would be to see whaat percentage of the time it beat a player who played "randomly". this could provide a useful measure of the non-randomness - or intelligence - of our position evaluation function.
+
+
+%kain's data
+
+
+
+\section{Chomp Theorems and P-position Theory}
+
+%existing P-theory% 1-row chomp, 2-row chomp, L-positions, almost L-positions
+
+
+\begin{lem}
+	\label{lem:tr}
+	For any arbitrary Chomp board $B$, $B$ is a P position if, and only if, $B^T$ is a P position.
+\end{lem}
+
+
+\begin{proof}
+	Suppose some board $B$ is a P position.  By definition, every reachable board is then an N position.  Every reachable board is a result of some move $(i,j)$ where $1\leq i \leq m$ and $1\leq j \leq n$ where $m$ is the number of rows of the board and $n$ is the number of cookies in the $i$th row of the board.  This move takes the cookies denoted $C_{ij}$ along with every cookie such that removing any cookie $C_{i_oj_o}$ removes all cookies $C_ij$ such that $i_o \leq i\leq m$ and $j_o\leq j \leq n$.  $B^T$ is defined as the matrix of cookies such that each cookie $C_ij$ in $B$ is mapped to $C_ji$ in $B^T$.  So, removing any cookie $C_{j_oi_o}$ in $B^T$ removes all cookies   $C_ji$ such that $j_o\leq j \leq n$ and $i_o \leq i\leq m$.  Since every move in $B$ corresponds to a moves in $B^T$, a player could counteract any possible move in $B$ by removing the corresponding cookie in $B^T$.  This implies every reachable position in $B^T$ is an N position, so $B^T$ is a P position.  Without loss of generality, it can be shown that $B^T$ being a P position implies that $B$ is a P position.  Since these two statements imply each other, we can conclude that $B$ is a P position if, and only if, $B^T$ is a P position.
+\end{proof}
+
+
+\begin{term}
+An ``$L+1$ Position'' is a chomp board which has $x$ cookies in its first row, and two cookies in its second row, and one cookie in all other rows. These positions can be characterized by their width, $x$, and their height, $y$.\\ 
+\\
+\begin{figure}[Lplus2]
+\includegraphics[scale=0.25]{Lplus2_v2.png}
+\caption{L + 2 Position}
+\end{figure}
+\end{term}
+
+
+\begin{thm}
+	Let $B$ be an $L+1$ Position chomp board of width $w$ and height $h$.
+	\begin{enumerate}
+		\item $(w = h + 1) \,\land\, (w$ is even $)\,\land\,( h \geq 3) \implies (B$ is a P-Position$)$
+		\item $(w = h - 1) \,\land\, (h$ is even $)\,\land\,( h \geq 6) \implies (B$ is a P-Position$)$
+		\item All other $L+1$ Positions are N-Positions.
+	\end{enumerate}
+\end{thm}
+\clearpage
+\begin{proof}
+This is a proof by induction on $n$.\\
+Let $B_a$ be an L+2 Position chomp board of width $2n$ and height $2n-1$ for some $n \geq 2$.  Let $B_b$ be an L+2 Position chomp board of width $2m-1$ and height $2m$ for some $m \geq 3$.  Let $n = 2$.  Then, $B_a$ is an $L+2$ Position board of width $4$ and height $3$.  Using \ref{lem:3r}, this is a P board, so the base case for $B_a$ holds.  Now let $m = 3$.  Then $B_b$ is an $L+2$ Position board of width $5$ and height $6$.  This can (through the process of elimination) seen to be a P board.  Let $k$ be an integer such that $2 \leq k \leq n$ and $l$ be an integer such that $3 \leq l \leq m$.  We will assume that all L+2 Position boards of width $2k$ and height $2k-1$ are P boards (Inductive assumption A) and that all L+2 Position boards of width $2l-1$ and height $2l$ are also P positions (Inductive Assumption B).\\
+Consider a board of width $2(n+1)$, or $2n+2$ and height of $2(n+1)-1$, or $2n + 1$.  There are a several cases for which move that player one (P1) can make.  Applying proof by contradiction, assume these boards are N boards.  Then, there exists at least one reachable board which will be an P board.  Examining the possible cases, the following results are gathered using the  notation that ``$P1(x,y)$'' means that player one removes the $x$th cookie in row $y$.
+\begin{itemize}
+	\item [$P1(1, 3)$] This move converts the board to a 2-row chomp board, which has been solved for all cases.  Since the first row has an even number of cookies, it will never have exactly one more cookies than the second row, so this must be an N board.
+	\item [$P1(1,5)$] P2 can respond by playing $P2(3,1)$. By \ref{lem:tr}, each board is identical to its transpose, so this 2-column board is identical to the transposed 2-row board.  Then, since the first row is one greater than the second, it must be a P board.  Then, that means P2 was handed an N board, so after $P1(1,5)$ this board must be an N board.
+	\item [$P1(1, 2k)$] Then, player 2 (P2) can respond to P1 by playing $P2(2k+1,1)$, which, by Inductive Assumption A will convert this board to a P board.  Then, that means P2 was handed an N board, so after $P1(1,2k)$ this board must be an N board.
+	\item [$P1(1, 2k-1)$] Then, player 2 (P2) can respond to P1 by playing $P2(2k,1)$, which, by Inductive Assumption B will convert this board to a P board.  Then, that means P2 was handed an N board, so after $P1(1,2k-1)$ this board must be an N board.
+	\item [$P1(2,2)$] This move converts the board into an unbalanced L position, which is known to be an N board.
+	\item [$P1(2, 3)$] $L+1$ positions have been completely classified, and this position is known to be an N board.
+	\item [$P1(1, 2n+1)$] If P2 responds with $P2(2n+1, 1)$, which is a board of equal height and width that is not a balanced L position.  This is known to be a P board, so that means P2 was handed an N board, so after $P1(1, 2n+1)$ the board must be an N board.
+	\item [$P1(3, 1)$] By \ref{lem:tr}, each board is identical to its transpose, so this 2-column board is identical to the transposed 2-row board.  Then, since the first row is not exactly one greater than the second, it must be an N board.
+	\item[$P1(4,1)$] Each board is identical to its transpose, so this 3-column board is identical to the transposed 3-row board.  There are exactly two 3-row boards that are P positions with 1 cookies in their third row, and this is not one of them, so it is an N board.
+	\item[$P1(5, 1)$] Then this can be followed by $P2(1,4)$ which is assumed to be a P board as it is the base case for inductive assumption A.  Since P2 is able to move and make the board a P board, P2 was handed an N board.
+	\item [$P1(6,1)$] P2 can move $P2(1,7)$ which, using Inductive Assumption B, is a P board.  Since P2 is able to move and make the board a P board, P2 was handed an N board.
+	\item [$P1(2k-1, 1)$] Note here that $k\geq 3$ since all cases below that have been explicitly examined above.  Then, P2 can respond with $P2(1, 2k-2)$ which, by Inductive Assumption A, is a P board.  Since P2 is able to move and make the board a P board, P2 was handed an N board.
+	\item [$P1(2k, 1)$] Again, assume $k\geq 3$ since all lower cases have been explicitly examined above.  Then, P2 can respond with $P2(1,2k+1)$, which is a P board using Inductive Assumption B.  Since P2 is able to move and make the board a P board, P2 was handed an N board.
+	\item [$P1(2n+2, 1)$] Since the width and height of the board are the same, P2 can respond $P2(2, 2)$ and give P1 a balanced L position, which is a P board.  Since P2 is able to move and make the board a P board, P2 was handed an N board.
+\end{itemize}
+	Since in all possible cases, P1 must hand P2 an N board, we can conclude that our assumption that an L+2 board with width of $2n+2$ and height of $2n+1$ is an N position was incorrect.  Then, it must be a P position, assuming that Inductive Assumption B holds.  To prove this, we will next examine a board of width $2(n+1)-1$, or $2n+1$ and height $2(n+1)$, or $2n+2$.\\
+	To be continued\dots
+
+\end{proof}
+
+\begin{thm}
+	Let $B$ be an arbitrary chomp board, $n(B)$ be the number of cookies in that board, and $c(B)$ be the number of columns of that board.  If $B$ is a P position, then $n(B) \geq 2\cdot c(B) - 1$.
+\end{thm}
+
+\begin{proof}
+	Suppose $n(B) \geq 2\cdot c(B)-1$ for all P positions with less than $k$ columns.  Let $B$ be an arbitrary P board with $k$ columns.  Any move yields an N position, $B'$.  So suppose the first player takes a cookie in the last column in the first row.  An arbitrary number, $t$ cookies, are removed.  Then, the resulting board is an N position, so there is at least one reachable P position.  Note, however, the second player cannot reach a P position by taking any cookie in the first row, as this move could have been made by the first player, yet we assume the first player was handed a P position, and thus had no reachable P positions.  Then, the second player must take a cookie on some other row to reach a P position.  This move results in some arbitrary number, $l$ cookies, removed.  We will call this new P position $B''$.
+	\begin{align*}
+		n(B'') &= n(B) - t - l\\
+		c(B'') &= c(B) - 1\\
+	\end{align*}
+	By the inductive hypothesis,
+	\begin{align*}
+		n(B'') &\geq 2\cdot c(B'')-1\\
+		n(B) - t - l &\geq 2(c(B) - 1)-1\\
+		n(B) &\geq 2\cdot c(B) - 3 + t + l\\
+	\end{align*}
+	$t$ and $l$ are both at least one (otherwise, the moves to take those cookies would not have been legal).
+	\begin{align*}
+		n(B) &\geq 2\cdot c(B) -3 + 1 + 1\\
+		n(B) &\geq 2\cdot c(B) - 1
+	\end{align*}
+	As desired.
+\end{proof}
+\section{Open Problems}
+%prove or disprove more conjectures: both count as knowledge and are useful to the program
+
+
+
+%define and add more invariants. these - and counterexamples - encode chomp knowledge
+
+
+
+
+%develop more P-theory
+
+
+
+
+
+%design better position evaluation functions: is there a "natural" way to do this?
+
+%ideas used here may apply to more complicated games such as chess and go << maybe should go in the conclusion not the introduction as a call for further research
+The idea of applying conjectures into a game player extends beyond Chomp boards.  The game player can apply to any game given enough intelligence and theory.  This includes more complicated games such as chess and Go.
+
+%our belief is that it should be possible to write a high level chess playing program that does significantly less computation than Deep Blue. our brains simply do not have this computing power << same as above
+
+
+
+
+
+%we see this reseach as a potential approach to a general question: how to design machines that behave intelligently. what we describe is general, and can be applied in many other situations besides game playing programs
+
+
+
+\section{Acquiring the Program}
+
+%files and instructions on git. how to reproduce conjectures in this paper
+
+
+
+%Conjecturing program web page
+
+
+\begin{thebibliography}{99}
+\bibitem{Gale74}
+Gale, David,
+A Curious Nim-Type Game,
+The American Mathematical Monthly, 81, 8, 876--879, 1974
+
+\bibitem{Gale93}
+Gale, David,
+Mathematical entertainments,
+The Mathematical Intelligencer, 15, 3, 56--61, 1993.
+
+\bibitem{3row}
+Zeilberger, Doron, 
+Three-Rowed CHOMP,
+Advanced in Applied Mathematics, 26, 168--179, 2001.
+%cite maclaughlin meadows for the figures
+
+
+\end{thebibliography}
+\end{document}
